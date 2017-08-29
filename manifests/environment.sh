@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # TLS Bootstrapping 使用的 Token，可以使用命令 head -c 16 /dev/urandom | od -An -t x | tr -d ' ' 生成
-BOOTSTRAP_TOKEN="41f7e4ba8b7be874fcff18bf5cf41a7c"
+BOOTSTRAP_TOKEN="7234364f968d987f51b16164794dda9d"
 
 # 最好使用 主机未用的网段 来定义服务网段和 Pod 网段
 
@@ -9,13 +9,13 @@ BOOTSTRAP_TOKEN="41f7e4ba8b7be874fcff18bf5cf41a7c"
 SERVICE_CIDR="10.254.0.0/16"
 
 # POD 网段 (Cluster CIDR），部署前路由不可达，**部署后**路由可达(flanneld保证)
-CLUSTER_CIDR="172.30.0.0/16"
+CLUSTER_CIDR="172.28.0.0/16"
 
 # 服务端口范围 (NodePort Range)
 export NODE_PORT_RANGE="8400-9000"
 
 # etcd 集群服务地址列表
-export ETCD_ENDPOINTS="https://10.64.3.7:2379,https://10.64.3.8:2379,https://10.66.3.86:2379"
+export ETCD_ENDPOINTS="https://192.168.103.103:2379"
 
 # flanneld 网络配置前缀
 export FLANNEL_ETCD_PREFIX="/kubernetes/network"
