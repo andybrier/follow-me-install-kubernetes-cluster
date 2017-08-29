@@ -39,7 +39,7 @@ $
 1. 从 [github release 页面](https://github.com/kubernetes/kubernetes/releases) 下载发布版 tarball，解压后再执行下载脚本
 
     ``` shell
-    $ wget https://github.com/kubernetes/kubernetes/releases/download/v1.6.2/kubernetes.tar.gz
+    $ wget https://github.com/kubernetes/kubernetes/releases/download/v1.7.4/kubernetes.tar.gz
     $ tar -xzvf kubernetes.tar.gz
     ...
     $ cd kubernetes

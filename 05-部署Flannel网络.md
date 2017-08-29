@@ -2,7 +2,7 @@
 
 tags: flanneld
 
-# 部署 Flannel 网络
+# 部署 Flannel （V0.8）网络
 
 kubernetes 要求集群内各节点能通过 Pod 网段互联互通，本文档介绍使用 Flannel 在**所有节点** (Master、Node) 上创建互联互通的 Pod 网段的步骤。
 
@@ -11,7 +11,7 @@ kubernetes 要求集群内各节点能通过 Pod 网段互联互通，本文档�
 本文档用到的变量定义如下：
 
 ``` bash
-$ export NODE_IP=10.64.3.7 # 当前部署节点的 IP
+$ export NODE_IP=192.168.103.103# 当前部署节点的 IP
 $ # 导入用到的其它全局变量：ETCD_ENDPOINTS、FLANNEL_ETCD_PREFIX、CLUSTER_CIDR
 $ source /root/local/bin/environment.sh
 $
@@ -74,17 +74,26 @@ $ /root/local/bin/etcdctl \
   set ${FLANNEL_ETCD_PREFIX}/config '{"Network":"'${CLUSTER_CIDR}'", "SubnetLen": 24, "Backend": {"Type": "vxlan"}}'
 ```
 
-+ flanneld **目前版本 (v0.7.1) 不支持 etcd v3**，故使用 etcd v2 API 写入配置 key 和网段数据；
-+ 写入的 Pod 网段(${CLUSTER_CIDR}，172.30.0.0/16) 必须与 kube-controller-manager 的 `--cluster-cidr` 选项值一致；
+查看写入到etcd中的配置：
+
+```
+/root/local/bin/etcdctl   --endpoints=${ETCD_ENDPOINTS}   --ca-file=/etc/kubernetes/ssl/ca.pem   --cert-file=/etc/flanneld/ssl/flanneld.pem   --key-file=/etc/flanneld/ssl/flanneld-key.pem   get ${FLANNEL_ETCD_PREFIX}/config
+```
+
+参考： https://coreos.com/flannel/docs/latest/configuration.html，  https://coreos.com/flannel/docs/latest/running.html
+
+
++ flanneld **目前版本 (v0.8) 不支持 etcd v3**，故使用 etcd v2 API 写入配置 key 和网段数据；
++ 写入的 Pod 网段(${CLUSTER_CIDR}，172.28.0.0/16) 必须与 kube-controller-manager 的 `--cluster-cidr` 选项值一致；
 
 ## 安装和配置 flanneld
 
 ### 下载 flanneld
 
 ``` bash
-$ mkdir flannel
-$ wget https://github.com/coreos/flannel/releases/download/v0.7.1/flannel-v0.7.1-linux-amd64.tar.gz
-$ tar -xzvf flannel-v0.7.1-linux-amd64.tar.gz -C flannel
+$ mkdir -p flannel
+$ wget https://github.com/coreos/flannel/releases/download/v0.8.0/flannel-v0.8.0-linux-amd64.tar.gz
+$ tar -xzvf flannel-v0.8.0-linux-amd64.tar.gz -C flannel
 $ sudo cp flannel/{flanneld,mk-docker-opts.sh} /root/local/bin
 $
 ```
@@ -137,8 +146,8 @@ $
 ### 检查 flanneld 服务
 
 ``` bash
-$ journalctl  -u flanneld |grep 'Lease acquired'
-$ ifconfig flannel.1
+$ systemctl status flanneld
+$  ip link
 $
 ```
 
